@@ -17,18 +17,27 @@ jobs:
       with:
         toolchain: stable
         
-    - name: Install dependencies
+    - name: Install dependencies for linux
       run: |
         sudo apt-get update
         sudo apt-get install -y libsmbclient-dev pkg-config
-    
-    - name: Build Legba binary
+    - name: Install mingw toolchain for windows cross-compiling
+      run: |
+        sudo apt-get install -y gcc-mingw-w64-x86-64
+        
+    - name: Build Legba binary for linux
       run: |
         cargo build --release
+
+    - name: Build Legba binary for Windows
+      run: | 
+        cargo build --release --target x86_64-pc-windows-gnu
 
     - name: Upload Release Asset
       uses: softprops/action-gh-release@v2
       with:
-        files: ./target/release/legba
+        files: |
+          ./target/release/legba
+          ./targer/x86_64-pc-windows-gnu/release/legba.exe
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
